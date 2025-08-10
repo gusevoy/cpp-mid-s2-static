@@ -16,7 +16,15 @@
                 "checksum"
             ],
             "cwd": "${workspaceFolder}/build"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Build with Make",
+            "program": "/usr/bin/make",
+            "args": ["-j4"],
+            "cwd": "${workspaceFolder}/build",
+            "postDebugTask": "run-tests"
         }
-
     ]
 }

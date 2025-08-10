@@ -14,5 +14,8 @@
           "ms-vscode.cmake-tools"
         ]
       }
-    }
-  }
+    },
+    "mounts": [
+      "source=C:/Users/Adminko2/.gitconfig,target=/etc/gitconfig,type=bind,consistency=cached"
+    ]
+}
