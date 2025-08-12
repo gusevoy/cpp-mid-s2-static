@@ -2,14 +2,26 @@
 #include "../include/types.hpp"
 
 #include <iostream>
+#include <string_view>
 
-using namespace std::string_literals;
+//using namespace stdx::details;
+using namespace stdx::details::literals;
+
+template <typename FS>
+void print_fmt_info(const FS& fmt, std::string_view note = "") {
+    std::cout << "fmt " << note << ": " << fmt.get_format_string() << " [N=" << fmt.size() << ", PH:" << fmt.get_placeholder_count() << "]" << std::endl;
+    std::cout << "positions: ";
+    for (const auto& pair : fmt.get_positions()) {
+        std::cout << pair.first << "-" << pair.second << "  ";
+    }
+    std::cout << std::endl;
+}
 
 int main() { 
     //static_assert(stdx::scan<stdx::details::format_string{}, stdx::details::fixed_string{}, int>().i == 42);
 
     constexpr stdx::details::fixed_string<char, 6> fs1{"Hello"};
-    std::cout << "fs1: "s << fs1.c_str() << "\n";
+    std::cout << "fs1: " << fs1.c_str() << "\n";
 
 
     constexpr stdx::details::fixed_string<char, 10> fs2{"World"};
@@ -25,19 +37,21 @@ int main() {
     std::cout << "pe: " << pe.c_str() << "\n";
 
     constexpr auto fmt1 = stdx::details::format_string<"format string test {} test2">{};
-    std::cout << "fmt1: " << fmt1.get_format_string() << " [N=" << fmt1.size() << ", PH:" << fmt1.get_placeholder_count() << "]" << std::endl;
+    print_fmt_info(fmt1, "1");
 
     constexpr auto fmt2 = stdx::details::format_string<"{}format string test {} test2 {} test3{}">{};
-    std::cout << "fmt2: " << fmt2.get_format_string() << " [N=" << fmt2.size() << ", PH:" << fmt2.get_placeholder_count() << "]" << std::endl;
+    print_fmt_info(fmt2, "2");
 
     // должна бросать static_assert
     // constexpr auto fmt3 = stdx::details::format_string<"format string test { test2 {} test3">{};
-    // std::cout << "fmt3: " << fmt3.get_format_string() << " [N=" << fmt3.size() << ", PH:" << fmt3.get_placeholder_count() << "]" << std::endl;
+    // print_fmt_info(fmt3);
 
-    std::cout << "fmt2 positions: ";
-    for (const auto& pair : fmt2.get_positions()) {
-        std::cout << pair.first << "-" << pair.second << "  ";
-    }
-    std::cout << std::endl;
+    constexpr auto fmt4 = "{} literal test {} test 2{} test3{}"_fs;
+    print_fmt_info(fmt4, "4");
+
+    // не должно компилироваться
+    // constexpr auto fmt5 = "{test"_fs;
+    // print_fmt_info(fm5, "5");
+
 
 }

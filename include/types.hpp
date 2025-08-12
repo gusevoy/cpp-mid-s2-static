@@ -23,7 +23,7 @@ struct fixed_string {
         std::copy_n(begin, length, data);
     }
 
-    CharT data[N]{};
+    CharT data[N] = {};
 
     constexpr const CharT* c_str() const {
         return data;
