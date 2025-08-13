@@ -3,8 +3,6 @@
 #include <array>
 #include <cstddef>
 #include <expected>
-#include <mutex>
-#include <tuple>
 
 #include "types.hpp"
 
@@ -15,7 +13,7 @@ template <fixed_string f_str>
 class format_string {
 public:
 
-    constexpr format_string() = default;
+    consteval format_string() = default;
 
     static constexpr auto value = f_str;
 
@@ -116,7 +114,6 @@ private:
             pos++;
         }
 
-        // static_assert(index == get_placeholder_count(), "Количество найденых мест вставки не соответствует определенному ранее.");
         return positions;
     }
 
@@ -128,7 +125,7 @@ namespace literals {
 
 // Пользовательский литерал
 template <fixed_string FS>
-constexpr auto operator""_fs() {
+consteval auto operator""_fs() {
     return format_string<FS>{};
 }
 

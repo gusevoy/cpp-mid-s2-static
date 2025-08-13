@@ -8,28 +8,29 @@ namespace stdx::details {
 
 template <typename CharT, std::size_t N>
 struct fixed_string {
-    constexpr fixed_string(const CharT (&str)[N]) {
+    consteval fixed_string(const CharT (&str)[N]) {
         std::copy_n(str, N, data);
     }
 
     template <std::size_t M>
-    constexpr fixed_string(const CharT (&str)[M]) {
+    consteval fixed_string(const CharT (&str)[M]) {
         static_assert(M <= N, "Слишком длинная входная строка.");
         std::copy_n(str, M, data);
     }
 
-    constexpr fixed_string(const CharT* begin, const CharT* end) {
+    consteval fixed_string(const CharT* begin, const CharT* end) {
         const std::size_t length = end - begin;
         std::copy_n(begin, length, data);
     }
 
     CharT data[N] = {};
 
+
     constexpr const CharT* c_str() const {
         return data;
     }
 
-    constexpr std::size_t size() const {
+    consteval std::size_t size() const {
         return N;
     }
 };

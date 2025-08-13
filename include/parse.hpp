@@ -4,7 +4,6 @@
 #include <concepts>
 #include <cstddef>
 #include <expected>
-#include <optional>
 #include <string_view>
 #include <system_error>
 #include <type_traits>
@@ -15,8 +14,6 @@
 namespace stdx::details {
 
 // Шаблонная функция, возвращающая пару позиций в строке с исходными данными, соотвествующих I-ому плейсхолдеру
-// Функция закомментирована, так как еще не реализованы классы, которые она использует
-
 template<int I, format_string fmt, fixed_string source>
 consteval auto get_current_source_for_parsing() {
     static_assert(I >= 0 && I < fmt.get_placeholder_count(), "Invalid placeholder index");
@@ -75,15 +72,12 @@ consteval auto get_current_source_for_parsing() {
 template <typename T>
 consteval std::string_view get_type_format() {
     if constexpr (std::is_convertible_v<T, std::string_view>) {
-        //static_assert(false, "Я строка");
         return "%s";
     }
     else if constexpr (std::signed_integral<T>) {
-        //static_assert(false, "Я число");
         return "%d";
     }
     else if constexpr (std::unsigned_integral<T>) {
-        //static_assert(false, "Я натуральное число");
         return "%u";
     }
     else {
@@ -94,7 +88,7 @@ consteval std::string_view get_type_format() {
 
 template <typename T>
 requires std::integral<T>
-constexpr std::expected<T, parse_error> parse_value(std::string_view input) {
+consteval std::expected<T, parse_error> parse_value(std::string_view input) {
     std::remove_cv_t<T> value;
     if (std::from_chars(input.begin(), input.end(), value).ec == std::errc{} ) {
         return value;
@@ -105,22 +99,22 @@ constexpr std::expected<T, parse_error> parse_value(std::string_view input) {
 
 template <typename T>
 requires std::is_convertible_v<T, std::string_view>
-constexpr std::expected<T, parse_error> parse_value(std::string_view input) {
+consteval std::expected<T, parse_error> parse_value(std::string_view input) {
     return T{input};
 }
 
 // Шаблонная функция, выполняющая преобразования исходных данных в конкретный тип на основе I-го плейсхолдера
 
 template <typename value_type, std::size_t I, format_string fmt, fixed_string source>
-constexpr value_type parse_input() {
+consteval value_type parse_input() {
     static_assert(I < fmt.get_positions().size(), "В строке формата нет такого количество плейсхолдеров");
     constexpr auto fmt_positions = fmt.get_positions()[I];
     constexpr std::string_view type_format_string{fmt.value.data + fmt_positions.first + 1, fmt.value.data + fmt_positions.second};
     if constexpr (!type_format_string.empty()) {
         static_assert(get_type_format<value_type>() == type_format_string, "Формат типа в плейсхолдере и запрашиваемый формат не совпадают.");
     }
-    constexpr auto positions = stdx::details::get_current_source_for_parsing<I, fmt, source>();
-    constexpr auto result = stdx::details::parse_value<value_type>({source.data + positions.first, source.data + positions.second + 1});
+    constexpr auto source_positions = stdx::details::get_current_source_for_parsing<I, fmt, source>();
+    constexpr auto result = stdx::details::parse_value<value_type>({source.data + source_positions.first, source.data + source_positions.second});
     static_assert(result.has_value(), "Ошибка при парсинге");
     return result.value();
 }
