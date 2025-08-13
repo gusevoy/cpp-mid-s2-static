@@ -14,7 +14,10 @@ namespace stdx::details {
 template <fixed_string f_str>
 class format_string {
 public:
+
     constexpr format_string() = default;
+
+    static constexpr auto value = f_str;
 
     static constexpr std::size_t size() {
         return f_str.size();
@@ -34,8 +37,6 @@ public:
     }
 
 private:
-    static constexpr auto value = f_str;
-
     static constexpr std::expected<size_t, parse_error> get_number_placeholders() {
         constexpr size_t N = f_str.size();
         if (!N)
