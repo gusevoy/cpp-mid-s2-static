@@ -1,5 +1,6 @@
-#include "scan.hpp"
+#include <gtest/gtest.h>
 
-int main() { 
-    static_assert(stdx::scan<stdx::details::format_string{}, stdx::details::fixed_string{}, int>().i == 42); 
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
