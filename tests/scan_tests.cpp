@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <string>
 
 #include "../include/scan.hpp"
 #include "../include/types.hpp"
@@ -65,4 +66,26 @@ TEST(ScanTest, FormatStringTest) {
     auto result = stdx::scan<"{}_{}"_fs, "{_}", std::string_view, std::string_view>();
     EXPECT_EQ(std::get<0>(result.values), "{");
     EXPECT_EQ(std::get<1>(result.values), "}");
+}
+
+TEST(ScanTest, CompileTimeFailTest) {
+
+    // Ничего лучше не придумал. Раскомментирование любой строки в этом тесте ведет
+    // к ошибке компиляции с внятным сообщением.
+
+    // неверные строки формата - ошибка времени компиляции
+    // constexpr auto format_string_1 = "test {unknown format}"_fs;
+    // constexpr auto format_string_2 = "test {"_fs;
+    // constexpr auto format_string_3 = "{%s test"_fs;
+
+    // несоответствие типов формату - ошибка времени компиляции
+    // auto result_1 = stdx::scan<"test {%d}"_fs, "test 1", std::string>();
+    // auto result_2 = stdx::scan<"test {%u}"_fs, "test 1", int>();
+    
+    // ошибка при парсинге источника - ошибка времени компиляции
+    // auto result_3 = stdx::scan<"test {%d}"_fs, "test wrong", int>();
+    // auto result_4 = stdx::scan<"test {}"_fs, "test wrong", int>();
+    // auto result_5 = stdx::scan<"test {%u}"_fs, "test -1", unsigned int>();
+
+    EXPECT_TRUE(true);
 }
